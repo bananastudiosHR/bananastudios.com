@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banana Studios Staff Login - bananastudios.playcode.io</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          background-color: black; /* Change background color to black */
+          margin: 0;
+      }
+      .login-container {
+          background-color: #ffffff;
+          padding: 40px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          text-align: center;
+          transition: opacity 0.5s ease;
+          opacity: 1;
+      }
+      .login-input {
+          width: 100%;
+          padding: 12px;
+          margin-bottom: 20px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          box-sizing: border-box;
+          font-size: 16px;
+      }
+      .login-button {
+          background-color: #007bff;
+          color: #fff;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+          font-size: 16px;
+      }
+      .login-button:hover {
+          background-color: #0056b3;
+      }
+      .error-message {
+          color: red;
+          margin-bottom: 20px;
+      }
+      .id-section {
+          display: none;
+          opacity: 0; /* Initially hide the ID section */
+          transition: opacity 0.5s ease;
+      }
+      .id-input {
+          width: 100%;
+          padding: 12px;
+          margin-bottom: 20px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          box-sizing: border-box;
+          font-size: 16px;
+      }
+      .banana-studios-text {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 24px;
+          color: yellow;
+          z-index: 100;
+          opacity: 0;
+          transition: opacity 0.5s ease;
+      }
+      .copyright-text {
+          position: fixed;
+          bottom: 20px;
+          left: 20px;
+          font-size: 16px;
+          color: red; /* Change text color to red */
+          opacity: 0;
+          transition: opacity 0.5s ease;
+      }
+      .sections-container {
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 18px;
+          color: white; /* Change text color to white */
+          opacity: 0;
+          transition: opacity 0.5s ease;
+          z-index: 100;
+          display: flex;
+      }
+      .section-box {
+          padding: 10px 20px;
+          margin: 0 10px;
+          cursor: pointer;
+          border: 1px solid #fff;
+          border-radius: 5px;
+          transition: background-color 0.3s ease;
+      }
+      .section-box:hover {
+          background-color: rgba(255, 0, 0, 1);
+      }
+      .logout-box {
+          display: none; /* Initially hide the logout button */
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 10px 20px;
+          cursor: pointer;
+          border: 1px solid #fff;
+          border-radius: 5px;
+          transition: background-color 0.3s ease;
+          color: yellow; /* Change the text color to red */
+      }
+      .logout-box:hover {
+          background-color: rgba(255, 0, 6, 1);
+          border-color: #ccc; /* Change the border color on hover */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Login</h2>
+      <input
+        type="text"
+        id="username"
+        class="login-input"
+        placeholder="Username"
+      />
+      <br />
+      <input
+        type="password"
+        id="password"
+        class="login-input"
+        placeholder="Password"
+      />
+      <br />
+      <button onclick="attemptLogin()" class="login-button">Login</button>
+      <p id="error-message" class="error-message"></p>
+    </div>
+
+    <div class="id-section" id="id-section">
+      <h2>Enter Staff ID</h2>
+      <input
+        type="text"
+        id="staff-id"
+        class="id-input"
+        placeholder="Staff ID"
+      />
+      <br />
+      <button onclick="validateID()" class="login-button">Submit</button>
+    </div>
+
+    <div class="banana-studios-text">Banana Studios</div>
+    <div class="copyright-text">Copyright 2018-2024</div>
+    <div class="sections-container">
+      <div class="section-box" onclick="loadConsole()">Console</div>
+      <div class="section-box" onclick="loadLogs()">Logs</div>
+      <div class="section-box" onclick="loadModeration()">Moderation</div>
+      <div class="section-box" onclick="loadUserInfo()">User Information</div>
+    </div>
+    <div class="logout-box" onclick="logout()">Log Out</div>
+
+    <script>
+      let loginAttempts = 0;
+      let loggedInUsername = "";
+      let loggedInID = "";
+
+      const validIDs = [0, 7832056198, 4567891230, 9876543210, 1597534682, 3579514568, 8520147963, 3698521470, 2109876543, 8912345670, 6543210987, 8012356749, 3141592653, 2389756104];
+      const users = [
+          { name: "BananaStudios", username: "Banana", password: "bsot" },
+          { name: "Benny", username: "bennyb326", password: "Co-owner" },
+          { name: "Cactus", username: "cactus123", password: "Co-owner" },
+          { name: "Frosty", username: "frosty25", password: "Dev" },
+          { name: "Unknown", username: "unknown", password: "Dev" },
+          { name: "Someone", username: "someone123", password: "Admin" },
+          { name: "Artumus", username: "artumus", password: "Admin" },
+          { name: "Dark", username: "dark", password: "Dev" },
+          { name: "Skittle", username: "skittle", password: "Dev" },
+          { name: "Wither", username: "wither", password: "Admin" },
+          { name: "Bean", username: "bean", password: "Manager" },
+          { name: "Alex", username: "alex", password: "Manager" },
+          { name: "Pillow", username: "pillow", password: "Admin" },
+          { name: "Infinite", username: "infinite", password: "Helper" },
+          { name: "Glitch", username: "glitch", password: "Helper" },
+          { name: "Troll", username: "troll", password: "Helper" },
+          { name: "Vpid", username: "Vpid", password: "Vpid123"}
+      ];
+
+      function attemptLogin() {
+          const usernameInput = document.getElementById('username').value.trim();
+          const passwordInput = document.getElementById('password').value.trim();
+
+          const user = users.find(user => user.username === usernameInput && user.password === passwordInput);
+
+          if (user) {
+              loggedInUsername = user.username;
+              document.getElementById('error-message').textContent = '';
+              fadeOutLogin();
+              document.querySelector('.logout-box').style.display = 'block'; // Show logout button
+          } else {
+              loginAttempts++;
+              if (loginAttempts >= 3) {
+                  document.getElementById('error-message').textContent = 'You have exceeded the maximum number of login attempts. Please try again in 10 seconds.';
+                  disableLoginForm();
+                  setTimeout(() => {
+                      resetLogin();
+                  }, 10000);
+              } else {
+                  document.getElementById('error-message').textContent = 'Invalid username or password. Attempts remaining: ' + (3 - loginAttempts);
+              }
+          }
+      }
+
+      function resetLogin() {
+          loginAttempts = 0;
+          document.getElementById('username').value = '';
+          document.getElementById('password').value = '';
+          document.getElementById('error-message').textContent = '';
+          enableLoginForm();
+      }
+
+      function disableLoginForm() {
+          document.getElementById('username').disabled = true;
+          document.getElementById('password').disabled = true;
+          document.getElementById('login-button').disabled = true;
+      }
+
+      function enableLoginForm() {
+          document.getElementById('username').disabled = false;
+          document.getElementById('password').disabled = false;
+          document.getElementById('login-button').disabled = false;
+      }
+
+      function fadeOutLogin() {
+          const loginContainer = document.querySelector('.login-container');
+          loginContainer.style.opacity = '0';
+          setTimeout(() => {
+              loginContainer.style.display = 'none';
+              document.querySelector('.id-section').style.display = 'block';
+              fadeInIDSection(); // Fade in the ID section after login container fades out
+          }, 500);
+      }
+
+      function fadeInIDSection() {
+          const idSection = document.querySelector('.id-section');
+          idSection.style.opacity = '1'; // Fade in the ID section
+      }
+
+      function validateID() {
+          const staffID = parseInt(document.getElementById('staff-id').value.trim());
+          if (validIDs.includes(staffID)) {
+              loggedInID = staffID;
+              document.querySelector('.id-section').style.opacity = '0';
+              setTimeout(() => {
+                  document.querySelector('.id-section').style.display = 'none';
+                  fadeInBananaStudios();
+              }, 500);
+          } else {
+              document.getElementById('error-message').textContent = 'Invalid Staff ID. Please try again.';
+          }
+      }
+
+      function fadeInBananaStudios() {
+          const bananaStudiosText = document.querySelector('.banana-studios-text');
+          bananaStudiosText.style.opacity = '1';
+          setTimeout(() => {
+              fadeOutBananaStudios();
+          }, 2000);
+      }
+
+      function fadeOutBananaStudios() {
+          const bananaStudiosText = document.querySelector('.banana-studios-text');
+          bananaStudiosText.style.opacity = '0';
+          setTimeout(() => {
+              bananaStudiosText.style.display = 'none';
+              fadeInCopyright();
+              fadeInSections();
+          }, 500);
+      }
+
+      function fadeInCopyright() {
+          const copyrightText = document.querySelector('.copyright-text');
+          copyrightText.style.opacity = '1';
+      }
+
+      function fadeInSections() {
+          const sectionsContainer = document.querySelector('.sections-container');
+          sectionsContainer.style.opacity = '1';
+      }
+
+      function loadConsole() {
+          // Implement console loading logic
+          console.log("Loading console...");
+      }
+
+      function loadLogs() {
+          // Implement logs loading logic
+          console.log("Loading logs...");
+      }
+
+      function loadModeration() {
+          // Implement moderation loading logic
+          console.log("Loading moderation...");
+      }
+
+      function loadUserInfo() {
+          // Display user information
+          const userInfo = document.getElementById("user-info");
+          userInfo.innerHTML = `<p>Username: ${loggedInUsername}</p><p>ID: ${loggedInID}</p>`;
+          fadeInUserInfo();
+      }
+
+      function fadeInUserInfo() {
+          const userInfo = document.getElementById("user-info");
+          userInfo.style.opacity = '1';
+      }
+
+      function logout() {
+          window.location.href = window.location.origin + window.location.pathname;
+          console.log("Logging out...");
+      }
+    </script>
+  </body>
+</html>
